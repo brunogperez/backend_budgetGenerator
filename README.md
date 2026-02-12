@@ -597,24 +597,13 @@ Este proyecto está bajo la Licencia MIT. Ver [LICENSE](LICENSE) para más detal
 
 ## 👨‍💻 Autor
 
-**Bruno** - Desarrollo completo del sistema backend
+**Bruno Perez** - Desarrollo completo del sistema backend
 
 ## 📞 Soporte
 
 Para soporte o consultas:
-- 📧 Email: [contacto]
+- 📧 Email: brunogperez91@gmail.com
 - 📚 Documentación: Ver archivos MD del proyecto
 - 🐛 Issues: Reportar en el repositorio
 
 ---
-
-<div align="center">
-
-**🎉 Sistema backend completo y funcional**
-
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)]()
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)]()
-[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)]()
-
-</div>#   b a c k e n d _ b u d g e t G e n e r a t o r  
- 
