@@ -1,0 +1,222 @@
+# ===============================================
+# NODE.JS
+# ===============================================
+
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# ===============================================
+# TYPESCRIPT
+# ===============================================
+
+# Archivos compilados de TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# ===============================================
+# VARIABLES DE ENTORNO
+# ===============================================
+
+# Archivos de entorno (contienen información sensible)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===============================================
+# LOGS
+# ===============================================
+
+# Archivos de log
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ===============================================
+# TESTING
+# ===============================================
+
+# Jest coverage
+coverage/
+*.lcov
+
+# Test results
+test-results/
+junit.xml
+
+# ===============================================
+# EDITORES E IDES
+# ===============================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# IntelliJ / WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ===============================================
+# SISTEMA OPERATIVO
+# ===============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+
+# Linux
+*~
+
+# ===============================================
+# HERRAMIENTAS DE DESARROLLO
+# ===============================================
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# StyleLint cache
+.stylelintcache
+
+# ===============================================
+# BASES DE DATOS
+# ===============================================
+
+# Archivos de base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Dumps de MongoDB
+dump/
+*.bson
+
+# ===============================================
+# ARCHIVOS TEMPORALES
+# ===============================================
+
+# Archivos temporales
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# ===============================================
+# CERTIFICADOS Y CLAVES
+# ===============================================
+
+# Certificados SSL
+*.pem
+*.crt
+*.key
+*.csr
+
+# Claves SSH
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# ===============================================
+# DOCUMENTACIÓN GENERADA
+# ===============================================
+
+# Documentación generada automáticamente
+docs/generated/
+api-docs/
+
+# ===============================================
+# ARCHIVOS DE CONFIGURACIÓN ESPECÍFICOS
+# ===============================================
+
+# Configuración local de desarrollo
+config/local.json
+config/development.json
+config/production.json
+
+# ===============================================
+# UPLOADS Y ARCHIVOS DE USUARIO
+# ===============================================
+
+# Directorio de uploads
+uploads/
+public/uploads/
+static/uploads/
+
+# ===============================================
+# MISC
+# ===============================================
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# proyecto bmad
+/_bmad
+/.claude
