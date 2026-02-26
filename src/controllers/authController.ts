@@ -302,3 +302,24 @@ export const refreshToken = asyncHandler(async (req: AuthRequest, res: Response)
     throw error;
   }
 });
+
+/**
+ * POST /auth/logout
+ * Cerrar sesión
+ */
+export const logout = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      errorResponse(res, 'Usuario no autenticado', 401, 'NOT_AUTHENTICATED');
+      return;
+    }
+
+    logger.info(`Usuario cerró sesión: ${req.user.email}`);
+
+    successResponse(res, null, 'Sesión cerrada exitosamente');
+
+  } catch (error) {
+    logger.error('Error en logout:', error);
+    throw error;
+  }
+});

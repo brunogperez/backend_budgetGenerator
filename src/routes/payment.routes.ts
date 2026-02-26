@@ -107,4 +107,19 @@ router.post(
   paymentController.cancelPayment
 );
 
+/**
+ * Catch malformed payment status URLs (like //status)
+ * Este debe ir al final para no interferir con rutas válidas
+ */
+router.get('/*/status', (req, res) => {
+  return res.status(400).json({
+    success: false,
+    message: 'ID de pago requerido',
+    error: {
+      code: 'MISSING_PAYMENT_ID',
+      details: 'La URL debe incluir un ID de pago válido: /api/payments/{paymentId}/status'
+    }
+  });
+});
+
 export default router;

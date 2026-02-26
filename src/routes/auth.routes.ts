@@ -86,4 +86,10 @@ router.put(
  */
 router.post('/refresh-token', authMiddleware, authController.refreshToken);
 
+/**
+ * POST /auth/logout
+ * Cerrar sesión
+ */
+router.post('/logout', authMiddleware, authController.logout);
+
 export default router;

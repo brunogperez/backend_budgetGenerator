@@ -41,7 +41,20 @@ app.use(helmet({
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
     ? process.env.FRONTEND_URL?.split(',') || []
-    : ['http://localhost:3000', 'http://localhost:19006', 'exp://localhost:19000', 'http://localhost:8081'],
+    : [
+        'http://localhost:3000',
+        'http://localhost:19006',
+        'exp://localhost:19000',
+        'http://localhost:8081',
+        // Para emulador Android
+        'http://10.0.2.2:3000',
+        'http://10.0.2.2:19006',
+        'http://10.0.2.2:8081',
+        // Para dispositivos físicos o red local
+        'http://192.168.1.39:3000',
+        'http://192.168.1.39:8081',
+        'http://192.168.1.39:19006'
+      ],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -146,12 +159,14 @@ const startServer = async (): Promise<void> => {
     await initializeMercadoPago();
 
     // Iniciar servidor
-    const server = app.listen(PORT, () => {
-      logger.info(`🚀 Servidor iniciado en puerto ${PORT}`);
-      logger.info(`📍 URL: http://localhost:${PORT}`);
-      logger.info(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
-      logger.info(`📋 Health check: http://localhost:${PORT}/health`);
-    });
+  const server = app.listen(Number(PORT), '0.0.0.0', () => {
+    logger.info(`🚀 Servidor iniciado en puerto ${PORT}`);
+    logger.info(`📍 URL: http://0.0.0.0:${PORT}`);
+    logger.info(`🔗 Localhost: http://localhost:${PORT}`);
+    logger.info(`📱 Android Emulator: http://10.0.2.2:${PORT}`);
+    logger.info(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`📋 Health check: http://localhost:${PORT}/health`);
+  });
 
     // Manejo de señales para cierre graceful
     const gracefulShutdown = (signal: string) => {
