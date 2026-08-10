@@ -4,6 +4,7 @@
  */
 
 import ExcelJS from 'exceljs';
+import Product from '../models/Product';
 
 export interface ParsedRow {
   row: number;
@@ -237,4 +238,96 @@ export async function parseCatalog(buffer: Buffer): Promise<ParseResult> {
   }
 
   return { rows: Array.from(bySku.values()), errors, warnings };
+}
+
+export interface PreviewRow {
+  row: number;
+  action: 'create' | 'update';
+  sku: string;
+  name: string;
+  price: number;
+  stock: number;
+}
+
+export interface PreviewResult {
+  summary: { total: number; toCreate: number; toUpdate: number; invalid: number };
+  rows: PreviewRow[];
+  errors: RowError[];
+  warnings: string[];
+}
+
+export interface ImportResult {
+  summary: { created: number; updated: number; invalid: number };
+  errors: RowError[];
+  warnings: string[];
+}
+
+/** Compara filas parseadas contra la DB y clasifica en create/update. */
+export async function buildPreview(parse: ParseResult): Promise<PreviewResult> {
+  const skus = parse.rows.map((r) => r.sku);
+  const existing = await Product.find({ sku: { $in: skus } }).select('sku').lean();
+  const existingSkus = new Set(existing.map((p) => p.sku));
+
+  const rows: PreviewRow[] = parse.rows.map((r) => ({
+    row: r.row,
+    action: existingSkus.has(r.sku) ? 'update' : 'create',
+    sku: r.sku,
+    name: r.name,
+    price: r.price,
+    stock: r.stock
+  }));
+
+  const toUpdate = rows.filter((r) => r.action === 'update').length;
+
+  return {
+    summary: {
+      total: parse.rows.length + parse.errors.length,
+      toCreate: rows.length - toUpdate,
+      toUpdate,
+      invalid: parse.errors.length
+    },
+    rows,
+    errors: parse.errors,
+    warnings: parse.warnings
+  };
+}
+
+/**
+ * Upsert por SKU con bulkWrite. La validación ya ocurrió en parseCatalog
+ * (bulkWrite no ejecuta validators ni hooks de Mongoose).
+ */
+export async function executeImport(parse: ParseResult): Promise<ImportResult> {
+  if (parse.rows.length === 0) {
+    throw new ImportError('Nada para importar: no hay filas válidas en el Excel');
+  }
+
+  const operations = parse.rows.map((r) => ({
+    updateOne: {
+      filter: { sku: r.sku },
+      update: {
+        $set: {
+          name: r.name,
+          description: r.description,
+          price: r.price,
+          stock: r.stock,
+          category: r.category,
+          ...(r.imageUrl !== undefined && { imageUrl: r.imageUrl })
+        },
+        $setOnInsert: { isActive: true }
+      },
+      upsert: true
+    }
+  }));
+
+  const result = await Product.bulkWrite(operations, { ordered: false });
+
+  return {
+    summary: {
+      created: result.upsertedCount,
+      updated: result.matchedCount,
+      invalid: parse.errors.length
+    },
+    errors: parse.errors,
+    warnings: parse.warnings
+  };
 }
