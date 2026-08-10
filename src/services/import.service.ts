@@ -60,6 +60,53 @@ export function normalizeDriveUrl(url: string): string {
   );
 }
 
+const DOWNLOAD_TIMEOUT_MS = 15_000;
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+/**
+ * Descarga el xlsx desde Drive. Detecta respuestas HTML (página de login o
+ * de confirmación de Drive) como "archivo no público".
+ */
+export async function downloadDriveFile(url: string): Promise<Buffer> {
+  const target = normalizeDriveUrl(url);
+
+  let response: Response;
+  try {
+    response = await fetch(target, {
+      redirect: 'follow',
+      signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS)
+    });
+  } catch (err) {
+    const name = (err as Error).name;
+    if (name === 'TimeoutError' || name === 'AbortError') {
+      throw new ImportError('Tiempo de espera agotado descargando el archivo de Drive');
+    }
+    throw new ImportError('No se pudo descargar el archivo de Google Drive');
+  }
+
+  if (!response.ok) {
+    throw new ImportError('El archivo no es accesible públicamente o no existe');
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('text/html')) {
+    throw new ImportError(
+      'El archivo no es accesible públicamente. Compartilo con "cualquiera con el enlace"'
+    );
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+
+  if (buffer.length === 0) {
+    throw new ImportError('El archivo descargado está vacío');
+  }
+  if (buffer.length > MAX_FILE_BYTES) {
+    throw new ImportError('El archivo supera el límite de 10 MB');
+  }
+
+  return buffer;
+}
+
 const REQUIRED_HEADERS = ['sku', 'name', 'description', 'price', 'stock', 'category'];
 const SKU_RE = /^[A-Za-z0-9\-_]+$/;
 
