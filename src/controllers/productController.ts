@@ -8,9 +8,17 @@ import {
   updatedResponse,
   deletedResponse,
   notFoundResponse,
+  badRequestResponse,
   paginatedResponse
 } from '../utils/responses';
 import { logger } from '../utils/logger';
+import {
+  downloadDriveFile,
+  parseCatalog,
+  buildPreview,
+  executeImport,
+  ImportError
+} from '../services/import.service';
 
 /**
  * GET /products
@@ -351,6 +359,54 @@ export const searchProducts = asyncHandler(async (req: Request, res: Response): 
 
   } catch (error) {
     logger.error('Error en búsqueda de productos:', error);
+    throw error;
+  }
+});
+
+/**
+ * POST /products/import/preview
+ * Descarga y parsea el Excel de Drive; devuelve qué se crearía/actualizaría.
+ */
+export const previewImport = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  const { url } = req.body as { url: string };
+
+  try {
+    const buffer = await downloadDriveFile(url);
+    const parsed = await parseCatalog(buffer);
+    const preview = await buildPreview(parsed);
+
+    logger.info(`Preview de import generado por ${req.user?.email}: ${preview.summary.total} filas`);
+    successResponse(res, preview, 'Preview generado exitosamente');
+  } catch (error) {
+    if (error instanceof ImportError) {
+      badRequestResponse(res, error.message);
+      return;
+    }
+    throw error;
+  }
+});
+
+/**
+ * POST /products/import
+ * Descarga, parsea e importa (upsert por SKU) el catálogo desde Drive.
+ */
+export const importProducts = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
+  const { url } = req.body as { url: string };
+
+  try {
+    const buffer = await downloadDriveFile(url);
+    const parsed = await parseCatalog(buffer);
+    const result = await executeImport(parsed);
+
+    logger.info(
+      `Import de catálogo por ${req.user?.email}: ${result.summary.created} creados, ${result.summary.updated} actualizados`
+    );
+    successResponse(res, result, 'Importación completada');
+  } catch (error) {
+    if (error instanceof ImportError) {
+      badRequestResponse(res, error.message);
+      return;
+    }
     throw error;
   }
 });

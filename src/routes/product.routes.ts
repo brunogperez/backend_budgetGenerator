@@ -96,6 +96,42 @@ router.post(
   productController.createProduct
 );
 
+const importUrlValidation = [
+  body('url')
+    .notEmpty()
+    .withMessage('La URL del archivo es requerida')
+    .isURL({ protocols: ['https'] })
+    .withMessage('Debe ser una URL https válida')
+    .matches(/^https:\/\/(drive|docs)\.google\.com\//)
+    .withMessage('La URL debe ser de Google Drive o Google Sheets')
+];
+
+/**
+ * POST /products/import/preview
+ * Previsualizar importación de catálogo desde Excel de Google Drive
+ * Requiere autenticación - solo admin
+ */
+router.post(
+  '/import/preview',
+  authMiddleware,
+  adminMiddleware,
+  validate(importUrlValidation),
+  productController.previewImport
+);
+
+/**
+ * POST /products/import
+ * Importar catálogo desde Excel de Google Drive (upsert por SKU)
+ * Requiere autenticación - solo admin
+ */
+router.post(
+  '/import',
+  authMiddleware,
+  adminMiddleware,
+  validate(importUrlValidation),
+  productController.importProducts
+);
+
 /**
  * GET /products/:id
  * Obtener producto por ID
